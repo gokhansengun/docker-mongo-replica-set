@@ -1,0 +1,36 @@
+version: "2"
+
+services:
+
+  primary:
+    image: mongo:3.4.0
+    expose:
+      - "27017"
+    ports:
+      - "27017:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--replSet", "rs0" ]
+
+  slave1:
+    image: mongo:3.4.0
+    expose:
+      - "27017"
+    ports:
+      - "27018:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--replSet", "rs0" ]
+  
+  slave2:
+    image: mongo:3.4.0
+    expose:
+      - "27017"
+    ports:
+      - "27019:27017"
+    restart: always
+    entrypoint: [ "/usr/bin/mongod", "--replSet", "rs0" ]
+
+  importer:
+    image: mongo:3.4.0
+    volumes:
+      - ./scripts:/scripts
+    command: ["mongoimport", "--host", "primary:27017", "--db", "test", "--collection", "restaurants", "--drop", "--file", "/scripts/primer-dataset.json"]
